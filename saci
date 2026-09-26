@@ -1,0 +1,164 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "SaciGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- Botão principal
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 190, 0, 48)
+frame.Position = UDim2.new(1, -205, 0, 25)
+frame.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 14)
+corner.Parent = frame
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(65, 65, 65)
+stroke.Thickness = 1
+stroke.Parent = frame
+
+-- Texto
+local text = Instance.new("TextLabel")
+text.Size = UDim2.new(1, -65, 1, 0)
+text.Position = UDim2.new(0, 12, 0, 0)
+text.BackgroundTransparency = 1
+text.Text = "Saci 🦵🔥"
+text.TextColor3 = Color3.fromRGB(235, 235, 235)
+text.TextSize = 14
+text.Font = Enum.Font.GothamMedium
+text.TextXAlignment = Enum.TextXAlignment.Left
+text.Parent = frame
+
+-- Interruptor
+local switch = Instance.new("TextButton")
+switch.Size = UDim2.new(0, 58, 0, 30)
+switch.Position = UDim2.new(1, -68, 0.5, -15)
+switch.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+switch.Text = ""
+switch.AutoButtonColor = false
+switch.Parent = frame
+
+local switchCorner = Instance.new("UICorner")
+switchCorner.CornerRadius = UDim.new(1, 0)
+switchCorner.Parent = switch
+
+local knob = Instance.new("Frame")
+knob.Size = UDim2.new(0, 24, 0, 24)
+knob.Position = UDim2.new(0, 3, 0.5, -12)
+knob.BackgroundColor3 = Color3.fromRGB(125, 125, 125)
+knob.BorderSizePixel = 0
+knob.Parent = switch
+
+local knobCorner = Instance.new("UICorner")
+knobCorner.CornerRadius = UDim.new(1, 0)
+knobCorner.Parent = knob
+
+-- ON / OFF
+local ligado = false
+
+switch.MouseButton1Click:Connect(function()
+	ligado = not ligado
+
+	if ligado then
+		-- Botão fica VERMELHO no ON
+		TweenService:Create(
+			knob,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{
+				Position = UDim2.new(1, -27, 0.5, -12),
+				BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			}
+		):Play()
+
+		TweenService:Create(
+			switch,
+			TweenInfo.new(0.18),
+			{BackgroundColor3 = Color3.fromRGB(220, 30, 30)}
+		):Play()
+	else
+		TweenService:Create(
+			knob,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{
+				Position = UDim2.new(0, 3, 0.5, -12),
+				BackgroundColor3 = Color3.fromRGB(125, 125, 125)
+			}
+		):Play()
+
+		TweenService:Create(
+			switch,
+			TweenInfo.new(0.18),
+			{BackgroundColor3 = Color3.fromRGB(20, 20, 20)}
+		):Play()
+	end
+end)
+
+-- Variáveis para salvar a posição original e velocidade original
+local originalR6C0 = nil
+local originalR15C0 = nil
+local originalWalkSpeed = 16
+
+-- Sistema do Efeito Saci (Perna + Velocidade Suave)
+local function updateSaci()
+	local character = player.Character
+	if not character then return end
+
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+	-- Suporte R6
+	local torso = character:FindFirstChild("Torso")
+	local rightHipR6 = torso and torso:FindFirstChild("Right Hip")
+	
+	-- Suporte R15
+	local upperTorso = character:FindFirstChild("UpperTorso")
+	local rightUpperLeg = character:FindFirstChild("RightUpperLeg")
+	local rightHipR15 = upperTorso and upperTorso:FindFirstChild("RightHip") or (rightUpperLeg and rightUpperLeg:FindFirstChild("RightHip"))
+
+	if ligado then
+		-- Aumenta a velocidade para 45 (ótima para se movimentar sem bugar)
+		if humanoid then
+			if originalWalkSpeed == 16 and humanoid.WalkSpeed ~= 45 then
+				originalWalkSpeed = humanoid.WalkSpeed
+			end
+			humanoid.WalkSpeed = 45
+		end
+
+		-- Perna para cima
+		if rightHipR6 then
+			if not originalR6C0 then originalR6C0 = rightHipR6.C0 end
+			rightHipR6.C0 = CFrame.new(1, 2.5, 0)
+		end
+		
+		if rightHipR15 then
+			if not originalR15C0 then originalR15C0 = rightHipR15.C0 end
+			rightHipR15.C0 = CFrame.new(0.5, 1.8, 0)
+		end
+	else
+		-- Restaura a velocidade original
+		if humanoid then
+			humanoid.WalkSpeed = originalWalkSpeed
+		end
+
+		-- Restaura a perna original
+		if rightHipR6 and originalR6C0 then
+			rightHipR6.C0 = originalR6C0
+		end
+		
+		if rightHipR15 and originalR15C0 then
+			rightHipR15.C0 = originalR15C0
+		end
+	end
+end
+
+-- Atualiza a cada frame
+RunService.RenderStepped:Connect(updateSaci)
