@@ -1,131 +1,435 @@
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+local Lighting = game:GetService("Lighting")
+local Camera = workspace.CurrentCamera
 
 local player = Players.LocalPlayer
 
--- GUI
+-- GUI Principal com sistema anti-bloqueio
 local gui = Instance.new("ScreenGui")
-gui.Name = "SaciGUI"
+gui.Name = "SaciGuiMaster"
 gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
 
--- Botão principal
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 190, 0, 48)
-frame.Position = UDim2.new(1, -205, 0, 25)
-frame.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
-frame.BorderSizePixel = 0
-frame.Parent = gui
+local success = pcall(function()
+	if syn and syn.protect_gui then
+		syn.protect_gui(gui)
+	end
+	gui.Parent = CoreGui
+end)
 
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 14)
-corner.Parent = frame
+if not success then
+	gui.Parent = player:WaitForChild("PlayerGui")
+end
 
-local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(65, 65, 65)
-stroke.Thickness = 1
-stroke.Parent = frame
+----------------------------------------------------
+-- NOVO BOTÃO: FPS (Topo Esquerdo)
+----------------------------------------------------
+local frameFPS = Instance.new("Frame")
+frameFPS.Size = UDim2.new(0, 135, 0, 30)
+frameFPS.Position = UDim2.new(0, 15, 0, 15)
+frameFPS.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+frameFPS.BorderSizePixel = 0
+frameFPS.Parent = gui
 
--- Texto
-local text = Instance.new("TextLabel")
-text.Size = UDim2.new(1, -65, 1, 0)
-text.Position = UDim2.new(0, 12, 0, 0)
-text.BackgroundTransparency = 1
-text.Text = "Saci 🦵🔥"
-text.TextColor3 = Color3.fromRGB(235, 235, 235)
-text.TextSize = 14
-text.Font = Enum.Font.GothamMedium
-text.TextXAlignment = Enum.TextXAlignment.Left
-text.Parent = frame
+local cornerFPS = Instance.new("UICorner")
+cornerFPS.CornerRadius = UDim.new(0, 8)
+cornerFPS.Parent = frameFPS
 
--- Interruptor
-local switch = Instance.new("TextButton")
-switch.Size = UDim2.new(0, 58, 0, 30)
-switch.Position = UDim2.new(1, -68, 0.5, -15)
-switch.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-switch.Text = ""
-switch.AutoButtonColor = false
-switch.Parent = frame
+local strokeFPS = Instance.new("UIStroke")
+strokeFPS.Color = Color3.fromRGB(65, 65, 65)
+strokeFPS.Thickness = 1
+strokeFPS.Parent = frameFPS
 
-local switchCorner = Instance.new("UICorner")
-switchCorner.CornerRadius = UDim.new(1, 0)
-switchCorner.Parent = switch
+local textFPS = Instance.new("TextLabel")
+textFPS.Size = UDim2.new(1, -42, 1, 0)
+textFPS.Position = UDim2.new(0, 8, 0, 0)
+textFPS.BackgroundTransparency = 1
+textFPS.Text = "FPS: 60"
+textFPS.TextColor3 = Color3.fromRGB(235, 235, 235)
+textFPS.TextSize = 12
+textFPS.Font = Enum.Font.GothamMedium
+textFPS.TextXAlignment = Enum.TextXAlignment.Left
+textFPS.Parent = frameFPS
 
-local knob = Instance.new("Frame")
-knob.Size = UDim2.new(0, 24, 0, 24)
-knob.Position = UDim2.new(0, 3, 0.5, -12)
-knob.BackgroundColor3 = Color3.fromRGB(125, 125, 125)
-knob.BorderSizePixel = 0
-knob.Parent = switch
+local switchFPS = Instance.new("TextButton")
+switchFPS.Size = UDim2.new(0, 36, 0, 18)
+switchFPS.Position = UDim2.new(1, -40, 0.5, -9)
+switchFPS.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+switchFPS.Text = ""
+switchFPS.AutoButtonColor = false
+switchFPS.Parent = frameFPS
 
-local knobCorner = Instance.new("UICorner")
-knobCorner.CornerRadius = UDim.new(1, 0)
-knobCorner.Parent = knob
+local switchCornerFPS = Instance.new("UICorner")
+switchCornerFPS.CornerRadius = UDim.new(1, 0)
+switchCornerFPS.Parent = switchFPS
 
--- ON / OFF
-local ligado = false
+local knobFPS = Instance.new("Frame")
+knobFPS.Size = UDim2.new(0, 14, 0, 14)
+knobFPS.Position = UDim2.new(0, 2, 0.5, -7)
+knobFPS.BackgroundColor3 = Color3.fromRGB(125, 125, 125)
+knobFPS.BorderSizePixel = 0
+knobFPS.Parent = switchFPS
 
-switch.MouseButton1Click:Connect(function()
-	ligado = not ligado
+local knobCornerFPS = Instance.new("UICorner")
+knobCornerFPS.CornerRadius = UDim.new(1, 0)
+knobCornerFPS.Parent = knobFPS
 
-	if ligado then
-		-- Botão fica VERMELHO no ON
+local ligadoFPS = false
+
+switchFPS.MouseButton1Click:Connect(function()
+	ligadoFPS = not ligadoFPS
+
+	if ligadoFPS then
 		TweenService:Create(
-			knob,
+			knobFPS,
 			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-			{
-				Position = UDim2.new(1, -27, 0.5, -12),
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			}
+			{ Position = UDim2.new(1, -16, 0.5, -7), BackgroundColor3 = Color3.fromRGB(255, 255, 255) }
 		):Play()
 
 		TweenService:Create(
-			switch,
+			switchFPS,
 			TweenInfo.new(0.18),
-			{BackgroundColor3 = Color3.fromRGB(220, 30, 30)}
+			{ BackgroundColor3 = Color3.fromRGB(220, 30, 30) } -- Fica vermelho no ON
 		):Play()
 	else
 		TweenService:Create(
-			knob,
+			knobFPS,
 			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-			{
-				Position = UDim2.new(0, 3, 0.5, -12),
-				BackgroundColor3 = Color3.fromRGB(125, 125, 125)
-			}
+			{ Position = UDim2.new(0, 2, 0.5, -7), BackgroundColor3 = Color3.fromRGB(125, 125, 125) }
 		):Play()
 
 		TweenService:Create(
-			switch,
+			switchFPS,
 			TweenInfo.new(0.18),
-			{BackgroundColor3 = Color3.fromRGB(20, 20, 20)}
+			{ BackgroundColor3 = Color3.fromRGB(20, 20, 20) }
+		):Play()
+		textFPS.Text = "FPS: 60"
+	end
+end)
+
+
+----------------------------------------------------
+-- BOTÃO 1: SACI (Pequeno - Topo Direito)
+----------------------------------------------------
+local frameSaci = Instance.new("Frame")
+frameSaci.Size = UDim2.new(0, 135, 0, 30)
+frameSaci.Position = UDim2.new(1, -150, 0, 15)
+frameSaci.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+frameSaci.BorderSizePixel = 0
+frameSaci.Parent = gui
+
+local cornerSaci = Instance.new("UICorner")
+cornerSaci.CornerRadius = UDim.new(0, 8)
+cornerSaci.Parent = frameSaci
+
+local strokeSaci = Instance.new("UIStroke")
+strokeSaci.Color = Color3.fromRGB(65, 65, 65)
+strokeSaci.Thickness = 1
+strokeSaci.Parent = frameSaci
+
+local textSaci = Instance.new("TextLabel")
+textSaci.Size = UDim2.new(1, -42, 1, 0)
+textSaci.Position = UDim2.new(0, 8, 0, 0)
+textSaci.BackgroundTransparency = 1
+textSaci.Text = "Saci 🦵"
+textSaci.TextColor3 = Color3.fromRGB(235, 235, 235)
+textSaci.TextSize = 12
+textSaci.Font = Enum.Font.GothamMedium
+textSaci.TextXAlignment = Enum.TextXAlignment.Left
+textSaci.Parent = frameSaci
+
+local switchSaci = Instance.new("TextButton")
+switchSaci.Size = UDim2.new(0, 36, 0, 18)
+switchSaci.Position = UDim2.new(1, -40, 0.5, -9)
+switchSaci.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+switchSaci.Text = ""
+switchSaci.AutoButtonColor = false
+switchSaci.Parent = frameSaci
+
+local switchCornerSaci = Instance.new("UICorner")
+switchCornerSaci.CornerRadius = UDim.new(1, 0)
+switchCornerSaci.Parent = switchSaci
+
+local knobSaci = Instance.new("Frame")
+knobSaci.Size = UDim2.new(0, 14, 0, 14)
+knobSaci.Position = UDim2.new(0, 2, 0.5, -7)
+knobSaci.BackgroundColor3 = Color3.fromRGB(125, 125, 125)
+knobSaci.BorderSizePixel = 0
+knobSaci.Parent = switchSaci
+
+local knobCornerSaci = Instance.new("UICorner")
+knobCornerSaci.CornerRadius = UDim.new(1, 0)
+knobCornerSaci.Parent = knobSaci
+
+local ligadoSaci = false
+
+switchSaci.MouseButton1Click:Connect(function()
+	ligadoSaci = not ligadoSaci
+
+	if ligadoSaci then
+		TweenService:Create(
+			knobSaci,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Position = UDim2.new(1, -16, 0.5, -7), BackgroundColor3 = Color3.fromRGB(255, 255, 255) }
+		):Play()
+
+		TweenService:Create(
+			switchSaci,
+			TweenInfo.new(0.18),
+			{ BackgroundColor3 = Color3.fromRGB(220, 30, 30) }
+		):Play()
+	else
+		TweenService:Create(
+			knobSaci,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Position = UDim2.new(0, 2, 0.5, -7), BackgroundColor3 = Color3.fromRGB(125, 125, 125) }
+		):Play()
+
+		TweenService:Create(
+			switchSaci,
+			TweenInfo.new(0.18),
+			{ BackgroundColor3 = Color3.fromRGB(20, 20, 20) }
 		):Play()
 	end
 end)
 
--- Variáveis para salvar a posição original e velocidade original
+
+----------------------------------------------------
+-- BOTÃO 2: TELA (Pequeno - Logo abaixo do Saci)
+----------------------------------------------------
+local frameTela = Instance.new("Frame")
+frameTela.Size = UDim2.new(0, 135, 0, 30)
+frameTela.Position = UDim2.new(1, -150, 0, 50)
+frameTela.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+frameTela.BorderSizePixel = 0
+frameTela.Parent = gui
+
+local cornerTela = Instance.new("UICorner")
+cornerTela.CornerRadius = UDim.new(0, 8)
+cornerTela.Parent = frameTela
+
+local strokeTela = Instance.new("UIStroke")
+strokeTela.Color = Color3.fromRGB(65, 65, 65)
+strokeTela.Thickness = 1
+strokeTela.Parent = frameTela
+
+local textTela = Instance.new("TextLabel")
+textTela.Size = UDim2.new(1, -42, 1, 0)
+textTela.Position = UDim2.new(0, 8, 0, 0)
+textTela.BackgroundTransparency = 1
+textTela.Text = "Tela 🖥️"
+textTela.TextColor3 = Color3.fromRGB(235, 235, 235)
+textTela.TextSize = 12
+textTela.Font = Enum.Font.GothamMedium
+textTela.TextXAlignment = Enum.TextXAlignment.Left
+textTela.Parent = frameTela
+
+local switchTela = Instance.new("TextButton")
+switchTela.Size = UDim2.new(0, 36, 0, 18)
+switchTela.Position = UDim2.new(1, -40, 0.5, -9)
+switchTela.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+switchTela.Text = ""
+switchTela.AutoButtonColor = false
+switchTela.Parent = frameTela
+
+local switchCornerTela = Instance.new("UICorner")
+switchCornerTela.CornerRadius = UDim.new(1, 0)
+switchCornerTela.Parent = switchTela
+
+local knobTela = Instance.new("Frame")
+knobTela.Size = UDim2.new(0, 14, 0, 14)
+knobTela.Position = UDim2.new(0, 2, 0.5, -7)
+knobTela.BackgroundColor3 = Color3.fromRGB(125, 125, 125)
+knobTela.BorderSizePixel = 0
+knobTela.Parent = switchTela
+
+local knobCornerTela = Instance.new("UICorner")
+knobCornerTela.CornerRadius = UDim.new(1, 0)
+knobCornerTela.Parent = knobTela
+
+local ligadoTela = false
+
+switchTela.MouseButton1Click:Connect(function()
+	ligadoTela = not ligadoTela
+
+	if ligadoTela then
+		TweenService:Create(
+			knobTela,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Position = UDim2.new(1, -16, 0.5, -7), BackgroundColor3 = Color3.fromRGB(255, 255, 255) }
+		):Play()
+
+		TweenService:Create(
+			switchTela,
+			TweenInfo.new(0.18),
+			{ BackgroundColor3 = Color3.fromRGB(220, 30, 30) }
+		):Play()
+	else
+		TweenService:Create(
+			knobTela,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Position = UDim2.new(0, 2, 0.5, -7), BackgroundColor3 = Color3.fromRGB(125, 125, 125) }
+		):Play()
+
+		TweenService:Create(
+			switchTela,
+			TweenInfo.new(0.18),
+			{ BackgroundColor3 = Color3.fromRGB(20, 20, 20) }
+		):Play()
+	end
+end)
+
+
+----------------------------------------------------
+-- BOTÃO 3: GRÁFICO (Pequeno - Logo abaixo da Tela)
+----------------------------------------------------
+local frameGrafico = Instance.new("Frame")
+frameGrafico.Size = UDim2.new(0, 135, 0, 30)
+frameGrafico.Position = UDim2.new(1, -150, 0, 85)
+frameGrafico.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+frameGrafico.BorderSizePixel = 0
+frameGrafico.Parent = gui
+
+local cornerGrafico = Instance.new("UICorner")
+cornerGrafico.CornerRadius = UDim.new(0, 8)
+cornerGrafico.Parent = frameGrafico
+
+local strokeGrafico = Instance.new("UIStroke")
+strokeGrafico.Color = Color3.fromRGB(65, 65, 65)
+strokeGrafico.Thickness = 1
+strokeGrafico.Parent = frameGrafico
+
+local textGrafico = Instance.new("TextLabel")
+textGrafico.Size = UDim2.new(1, -42, 1, 0)
+textGrafico.Position = UDim2.new(0, 8, 0, 0)
+textGrafico.BackgroundTransparency = 1
+textGrafico.Text = "Gráfico 🎨"
+textGrafico.TextColor3 = Color3.fromRGB(235, 235, 235)
+textGrafico.TextSize = 12
+textGrafico.Font = Enum.Font.GothamMedium
+textGrafico.TextXAlignment = Enum.TextXAlignment.Left
+textGrafico.Parent = frameGrafico
+
+local switchGrafico = Instance.new("TextButton")
+switchGrafico.Size = UDim2.new(0, 36, 0, 18)
+switchGrafico.Position = UDim2.new(1, -40, 0.5, -9)
+switchGrafico.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+switchGrafico.Text = ""
+switchGrafico.AutoButtonColor = false
+switchGrafico.Parent = frameGrafico
+
+local switchCornerGrafico = Instance.new("UICorner")
+switchCornerGrafico.CornerRadius = UDim.new(1, 0)
+switchCornerGrafico.Parent = switchGrafico
+
+local knobGrafico = Instance.new("Frame")
+knobGrafico.Size = UDim2.new(0, 14, 0, 14)
+knobGrafico.Position = UDim2.new(0, 2, 0.5, -7)
+knobGrafico.BackgroundColor3 = Color3.fromRGB(125, 125, 125)
+knobGrafico.BorderSizePixel = 0
+knobGrafico.Parent = switchGrafico
+
+local knobCornerGrafico = Instance.new("UICorner")
+knobCornerGrafico.CornerRadius = UDim.new(1, 0)
+knobCornerGrafico.Parent = knobGrafico
+
+local ligadoGrafico = false
+local originalShadows = Lighting.GlobalShadows
+
+switchGrafico.MouseButton1Click:Connect(function()
+	ligadoGrafico = not ligadoGrafico
+
+	if ligadoGrafico then
+		TweenService:Create(
+			knobGrafico,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Position = UDim2.new(1, -16, 0.5, -7), BackgroundColor3 = Color3.fromRGB(255, 255, 255) }
+		):Play()
+
+		TweenService:Create(
+			switchGrafico,
+			TweenInfo.new(0.18),
+			{ BackgroundColor3 = Color3.fromRGB(220, 30, 30) }
+		):Play()
+
+		-- Ativa Gráfico de Massinha e FPS Booster
+		Lighting.GlobalShadows = false
+		for _, child in ipairs(Lighting:GetChildren()) do
+			if child:IsA("PostEffect") or child:IsA("Atmosphere") then
+				child.Enabled = false
+			end
+		end
+
+		for _, obj in ipairs(workspace:GetDescendants()) do
+			if obj:IsA("BasePart") and not obj:IsDescendantOf(player.Character) then
+				obj.Material = Enum.Material.SmoothPlastic
+				obj.Reflectance = 0
+			elseif obj:IsA("Texture") or obj:IsA("Decal") then
+				obj.Transparency = 1
+			elseif obj:IsA("ParticleEmitter") or obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
+				obj.Enabled = false
+			end
+		end
+	else
+		TweenService:Create(
+			knobGrafico,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Position = UDim2.new(0, 2, 0.5, -7), BackgroundColor3 = Color3.fromRGB(125, 125, 125) }
+		):Play()
+
+		TweenService:Create(
+			switchGrafico,
+			TweenInfo.new(0.18),
+			{ BackgroundColor3 = Color3.fromRGB(20, 20, 20) }
+		):Play()
+
+		Lighting.GlobalShadows = originalShadows
+		for _, child in ipairs(Lighting:GetChildren()) do
+			if child:IsA("PostEffect") or child:IsA("Atmosphere") then
+				child.Enabled = true
+			end
+		end
+	end
+end)
+
+
+----------------------------------------------------
+-- LÓGICA EM TEMPO REAL (FPS Counter, Saci e Tela)
+----------------------------------------------------
 local originalR6C0 = nil
 local originalR15C0 = nil
 local originalWalkSpeed = 16
 
--- Sistema do Efeito Saci (Perna + Velocidade Suave)
-local function updateSaci()
+local frameCount = 0
+local lastTick = tick()
+
+RunService.RenderStepped:Connect(function(dt)
+	-- Atualização do FPS Counter
+	frameCount = frameCount + 1
+	if tick() - lastTick >= 0.5 then
+		if ligadoFPS then
+			local currentFPS = math.floor(frameCount / (tick() - lastTick))
+			textFPS.Text = "FPS: " .. currentFPS
+		end
+		frameCount = 0
+		lastTick = tick()
+	end
+
 	local character = player.Character
 	if not character then return end
 
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
-
-	-- Suporte R6
 	local torso = character:FindFirstChild("Torso")
 	local rightHipR6 = torso and torso:FindFirstChild("Right Hip")
 	
-	-- Suporte R15
 	local upperTorso = character:FindFirstChild("UpperTorso")
 	local rightUpperLeg = character:FindFirstChild("RightUpperLeg")
 	local rightHipR15 = upperTorso and upperTorso:FindFirstChild("RightHip") or (rightUpperLeg and rightUpperLeg:FindFirstChild("RightHip"))
 
-	if ligado then
-		-- Aumenta a velocidade para 45 (ótima para se movimentar sem bugar)
+	-- Saci
+	if ligadoSaci then
 		if humanoid then
 			if originalWalkSpeed == 16 and humanoid.WalkSpeed ~= 45 then
 				originalWalkSpeed = humanoid.WalkSpeed
@@ -133,7 +437,6 @@ local function updateSaci()
 			humanoid.WalkSpeed = 45
 		end
 
-		-- Perna para cima
 		if rightHipR6 then
 			if not originalR6C0 then originalR6C0 = rightHipR6.C0 end
 			rightHipR6.C0 = CFrame.new(1, 2.5, 0)
@@ -144,12 +447,10 @@ local function updateSaci()
 			rightHipR15.C0 = CFrame.new(0.5, 1.8, 0)
 		end
 	else
-		-- Restaura a velocidade original
 		if humanoid then
 			humanoid.WalkSpeed = originalWalkSpeed
 		end
 
-		-- Restaura a perna original
 		if rightHipR6 and originalR6C0 then
 			rightHipR6.C0 = originalR6C0
 		end
@@ -158,7 +459,11 @@ local function updateSaci()
 			rightHipR15.C0 = originalR15C0
 		end
 	end
-end
 
--- Atualiza a cada frame
-RunService.RenderStepped:Connect(updateSaci)
+	-- Tela
+	if ligadoTela then
+		Camera.FieldOfView = 95
+	else
+		Camera.FieldOfView = 70
+	end
+end)
