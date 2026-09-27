@@ -24,7 +24,7 @@ if not success then
 end
 
 ----------------------------------------------------
--- NOVO BOTÃO: FPS (Topo Esquerdo)
+-- BOTÃO 1: FPS (Topo Esquerdo)
 ----------------------------------------------------
 local frameFPS = Instance.new("Frame")
 frameFPS.Size = UDim2.new(0, 135, 0, 30)
@@ -91,7 +91,7 @@ switchFPS.MouseButton1Click:Connect(function()
 		TweenService:Create(
 			switchFPS,
 			TweenInfo.new(0.18),
-			{ BackgroundColor3 = Color3.fromRGB(220, 30, 30) } -- Fica vermelho no ON
+			{ BackgroundColor3 = Color3.fromRGB(220, 30, 30) }
 		):Play()
 	else
 		TweenService:Create(
@@ -111,7 +111,93 @@ end)
 
 
 ----------------------------------------------------
--- BOTÃO 1: SACI (Pequeno - Topo Direito)
+-- BOTÃO 2: MOD ARMA (Estilo Sombra - Com Restauração no OFF)
+----------------------------------------------------
+local frameModArma = Instance.new("Frame")
+frameModArma.Size = UDim2.new(0, 135, 0, 30)
+frameModArma.Position = UDim2.new(0, 15, 0, 50)
+frameModArma.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+frameModArma.BorderSizePixel = 0
+frameModArma.Parent = gui
+
+local cornerModArma = Instance.new("UICorner")
+cornerModArma.CornerRadius = UDim.new(0, 8)
+cornerModArma.Parent = frameModArma
+
+local strokeModArma = Instance.new("UIStroke")
+strokeModArma.Color = Color3.fromRGB(65, 65, 65)
+strokeModArma.Thickness = 1
+strokeModArma.Parent = frameModArma
+
+local textModArma = Instance.new("TextLabel")
+textModArma.Size = UDim2.new(1, -42, 1, 0)
+textModArma.Position = UDim2.new(0, 8, 0, 0)
+textModArma.BackgroundTransparency = 1
+textModArma.Text = "Mod Arma 🔫"
+textModArma.TextColor3 = Color3.fromRGB(235, 235, 235)
+textModArma.TextSize = 12
+textModArma.Font = Enum.Font.GothamMedium
+textModArma.TextXAlignment = Enum.TextXAlignment.Left
+textModArma.Parent = frameModArma
+
+local switchModArma = Instance.new("TextButton")
+switchModArma.Size = UDim2.new(0, 36, 0, 18)
+switchModArma.Position = UDim2.new(1, -40, 0.5, -9)
+switchModArma.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+switchModArma.Text = ""
+switchModArma.AutoButtonColor = false
+switchModArma.Parent = frameModArma
+
+local switchCornerModArma = Instance.new("UICorner")
+switchCornerModArma.CornerRadius = UDim.new(1, 0)
+switchCornerModArma.Parent = switchModArma
+
+local knobModArma = Instance.new("Frame")
+knobModArma.Size = UDim2.new(0, 14, 0, 14)
+knobModArma.Position = UDim2.new(0, 2, 0.5, -7)
+knobModArma.BackgroundColor3 = Color3.fromRGB(125, 125, 125)
+knobModArma.BorderSizePixel = 0
+knobModArma.Parent = switchModArma
+
+local knobCornerModArma = Instance.new("UICorner")
+knobCornerModArma.CornerRadius = UDim.new(1, 0)
+knobCornerModArma.Parent = knobModArma
+
+local ligadoModArma = false
+
+switchModArma.MouseButton1Click:Connect(function()
+	ligadoModArma = not ligadoModArma
+
+	if ligadoModArma then
+		TweenService:Create(
+			knobModArma,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Position = UDim2.new(1, -16, 0.5, -7), BackgroundColor3 = Color3.fromRGB(255, 255, 255) }
+		):Play()
+
+		TweenService:Create(
+			switchModArma,
+			TweenInfo.new(0.18),
+			{ BackgroundColor3 = Color3.fromRGB(220, 30, 30) }
+		):Play()
+	else
+		TweenService:Create(
+			knobModArma,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Position = UDim2.new(0, 2, 0.5, -7), BackgroundColor3 = Color3.fromRGB(125, 125, 125) }
+		):Play()
+
+		TweenService:Create(
+			switchModArma,
+			TweenInfo.new(0.18),
+			{ BackgroundColor3 = Color3.fromRGB(20, 20, 20) }
+		):Play()
+	end
+end)
+
+
+----------------------------------------------------
+-- BOTÃO 3: SACI (Topo Direito)
 ----------------------------------------------------
 local frameSaci = Instance.new("Frame")
 frameSaci.Size = UDim2.new(0, 135, 0, 30)
@@ -197,7 +283,7 @@ end)
 
 
 ----------------------------------------------------
--- BOTÃO 2: TELA (Pequeno - Logo abaixo do Saci)
+-- BOTÃO 4: TELA (Logo abaixo do Saci)
 ----------------------------------------------------
 local frameTela = Instance.new("Frame")
 frameTela.Size = UDim2.new(0, 135, 0, 30)
@@ -283,7 +369,7 @@ end)
 
 
 ----------------------------------------------------
--- BOTÃO 3: GRÁFICO (Pequeno - Logo abaixo da Tela)
+-- BOTÃO 5: GRÁFICO (Logo abaixo da Tela)
 ----------------------------------------------------
 local frameGrafico = Instance.new("Frame")
 frameGrafico.Size = UDim2.new(0, 135, 0, 30)
@@ -354,7 +440,6 @@ switchGrafico.MouseButton1Click:Connect(function()
 			{ BackgroundColor3 = Color3.fromRGB(220, 30, 30) }
 		):Play()
 
-		-- Ativa Gráfico de Massinha e FPS Booster
 		Lighting.GlobalShadows = false
 		for _, child in ipairs(Lighting:GetChildren()) do
 			if child:IsA("PostEffect") or child:IsA("Atmosphere") then
@@ -396,11 +481,14 @@ end)
 
 
 ----------------------------------------------------
--- LÓGICA EM TEMPO REAL (FPS Counter, Saci e Tela)
+-- LÓGICA EM TEMPO REAL (FPS, Mod Arma com Restaurador, Saci, Tela)
 ----------------------------------------------------
 local originalR6C0 = nil
 local originalR15C0 = nil
 local originalWalkSpeed = 16
+
+-- Tabela para salvar o estado original da arma
+local originalWeaponData = {}
 
 local frameCount = 0
 local lastTick = tick()
@@ -419,6 +507,35 @@ RunService.RenderStepped:Connect(function(dt)
 
 	local character = player.Character
 	if not character then return end
+
+	-- Mod Arma: Aplica o estilo e restaura automaticamente ao desligar
+	if ligadoModArma then
+		for _, tool in ipairs(character:GetChildren()) do
+			if tool:IsA("Tool") then
+				for _, part in ipairs(tool:GetDescendants()) do
+					if part:IsA("BasePart") then
+						if not originalWeaponData[part] then
+							originalWeaponData[part] = {
+								Material = part.Material,
+								Color = part.Color
+							}
+						end
+						part.Material = Enum.Material.Neon
+						part.Color = Color3.fromRGB(255, 0, 0)
+					end
+				end
+			end
+		end
+	else
+		-- Se estiver desligado (OFF), volta a arma para o estado original perfeitamente
+		for part, data in pairs(originalWeaponData) do
+			if part and part.Parent then
+				part.Material = data.Material
+				part.Color = data.Color
+			end
+		end
+		originalWeaponData = {}
+	end
 
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	local torso = character:FindFirstChild("Torso")
